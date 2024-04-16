@@ -1,8 +1,3 @@
-#include <cassert>
-#include <cstdio>
-#include <cstdlib>
-using namespace std;
-
 #include "Testbench.h"
 
 void Testbench::do_sobel()
@@ -11,56 +6,66 @@ void Testbench::do_sobel()
   {
     for (int x = -4; x < width + 2; x++)
     {
-      std::array<uint8_t, 0xf> rgb_mask = {0};
-      rgb_mask[0x0] = 0xff;
-      rgb_mask[0x1] = 0xff;
-      rgb_mask[0x2] = 0xff;
-      rgb_mask[0x3] = 0xff;
-      rgb_mask[0x4] = 0xff;
-      rgb_mask[0x5] = 0xff;
-      rgb_mask[0x6] = 0xff;
-      rgb_mask[0x7] = 0xff;
-      rgb_mask[0x8] = 0xff;
-      rgb_mask[0x9] = 0xff;
-      rgb_mask[0xa] = 0xff;
-      rgb_mask[0xb] = 0xff;
-      rgb_mask[0xc] = 0xff;
-      rgb_mask[0xd] = 0xff;
-      rgb_mask[0xe] = 0xff;
-      std::array<uint8_t, 0xf> rgb_data = {0};
-      rgb_data[0x0] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 0] : 0;
-      rgb_data[0x1] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 1] : 0;
-      rgb_data[0x2] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 2] : 0;
-      rgb_data[0x3] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 0] : 0;
-      rgb_data[0x4] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 1] : 0;
-      rgb_data[0x5] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 2] : 0;
-      rgb_data[0x6] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 0] : 0;
-      rgb_data[0x7] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 1] : 0;
-      rgb_data[0x8] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 2] : 0;
-      rgb_data[0x9] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 0] : 0;
-      rgb_data[0xa] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 1] : 0;
-      rgb_data[0xb] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 2] : 0;
-      rgb_data[0xc] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 0] : 0;
-      rgb_data[0xd] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 1] : 0;
-      rgb_data[0xe] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 2] : 0;
-      initiator.write_to_socket(SOBEL_FILTER_R_ADDR, &rgb_mask[0], &rgb_data[0], 0xf);
-      bool done = false;
-      while (!done)
       {
-        std::array<uint8_t, 1> done_mask = {0xff};
-        std::array<uint8_t, 1> done_data = {0};
-        initiator.read_from_socket(SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
-        done = done_data[0] > 0;
-        wait(1, SC_NS);
+        std::array<uint8_t, 0xf> rgb_mask = {0};
+        {
+          rgb_mask[0x0] = 0xff;
+          rgb_mask[0x1] = 0xff;
+          rgb_mask[0x2] = 0xff;
+          rgb_mask[0x3] = 0xff;
+          rgb_mask[0x4] = 0xff;
+          rgb_mask[0x5] = 0xff;
+          rgb_mask[0x6] = 0xff;
+          rgb_mask[0x7] = 0xff;
+          rgb_mask[0x8] = 0xff;
+          rgb_mask[0x9] = 0xff;
+          rgb_mask[0xa] = 0xff;
+          rgb_mask[0xb] = 0xff;
+          rgb_mask[0xc] = 0xff;
+          rgb_mask[0xd] = 0xff;
+          rgb_mask[0xe] = 0xff;
+        }
+        std::array<uint8_t, 0xf> rgb_data = {0};
+        {
+          rgb_data[0x0] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 0] : 0;
+          rgb_data[0x1] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 1] : 0;
+          rgb_data[0x2] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 2] : 0;
+          rgb_data[0x3] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 0] : 0;
+          rgb_data[0x4] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 1] : 0;
+          rgb_data[0x5] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 2] : 0;
+          rgb_data[0x6] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 0] : 0;
+          rgb_data[0x7] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 1] : 0;
+          rgb_data[0x8] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 2] : 0;
+          rgb_data[0x9] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 0] : 0;
+          rgb_data[0xa] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 1] : 0;
+          rgb_data[0xb] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 2] : 0;
+          rgb_data[0xc] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 0] : 0;
+          rgb_data[0xd] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 1] : 0;
+          rgb_data[0xe] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 2] : 0;
+        }
+        initiator.write_to_socket(SOBEL_FILTER_R_ADDR, &rgb_mask[0], &rgb_data[0], 0xf);
       }
-      std::array<uint8_t, 1> result_mask = {0xff};
-      std::array<uint8_t, 1> result_data = {0};
-      initiator.read_from_socket(SOBEL_FILTER_RESULT_ADDR, &result_mask[0], &result_data[0], 0x1);
-      if (0 <= y && y < height && 0 <= (x - 2) && (x - 2) < width)
       {
-        target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 0] = result_data[0];
-        target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 1] = result_data[0];
-        target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 2] = result_data[0];
+        bool done = false;
+        while (!done)
+        {
+          std::array<uint8_t, 1> done_mask = {0xff};
+          std::array<uint8_t, 1> done_data = {0};
+          initiator.read_from_socket(SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
+          done = done_data[0] > 0;
+          wait(1, SC_NS);
+        }
+      }
+      {
+        std::array<uint8_t, 1> result_mask = {0xff};
+        std::array<uint8_t, 1> result_data = {0};
+        initiator.read_from_socket(SOBEL_FILTER_RESULT_ADDR, &result_mask[0], &result_data[0], 0x1);
+        if (0 <= y && y < height && 0 <= (x - 2) && (x - 2) < width)
+        {
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 0] = result_data[0];
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 1] = result_data[0];
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 2] = result_data[0];
+        }
       }
     }
   }

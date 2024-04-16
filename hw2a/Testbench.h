@@ -27,7 +27,6 @@ public:
   const unsigned int output_rgb_raw_data_offset;
   int width;
   int height;
-  unsigned int width_bytes;
   unsigned char bits_per_pixel;
   unsigned short bytes_per_pixel;
   unsigned char *source_bitmap;

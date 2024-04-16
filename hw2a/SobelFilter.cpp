@@ -13,31 +13,33 @@ void SobelFilter::do_filter()
   std::array<std::array<uint8_t, 5>, 5> gray = {0};
   while (true)
   {
-    gray[4][0] = gray[3][0];
-    gray[4][1] = gray[3][1];
-    gray[4][2] = gray[3][2];
-    gray[4][3] = gray[3][3];
-    gray[4][4] = gray[3][4];
-    gray[3][0] = gray[2][0];
-    gray[3][1] = gray[2][1];
-    gray[3][2] = gray[2][2];
-    gray[3][3] = gray[2][3];
-    gray[3][4] = gray[2][4];
-    gray[2][0] = gray[1][0];
-    gray[2][1] = gray[1][1];
-    gray[2][2] = gray[1][2];
-    gray[2][3] = gray[1][3];
-    gray[2][4] = gray[1][4];
-    gray[1][0] = gray[0][0];
-    gray[1][1] = gray[0][1];
-    gray[1][2] = gray[0][2];
-    gray[1][3] = gray[0][3];
-    gray[1][4] = gray[0][4];
-    gray[0][0] = (input[0][0].read() + input[0][1].read() + input[0][2].read()) / 3;
-    gray[0][1] = (input[1][0].read() + input[1][1].read() + input[1][2].read()) / 3;
-    gray[0][2] = (input[2][0].read() + input[2][1].read() + input[2][2].read()) / 3;
-    gray[0][3] = (input[3][0].read() + input[3][1].read() + input[3][2].read()) / 3;
-    gray[0][4] = (input[4][0].read() + input[4][1].read() + input[4][2].read()) / 3;
+    {
+      gray[4][0] = gray[3][0];
+      gray[4][1] = gray[3][1];
+      gray[4][2] = gray[3][2];
+      gray[4][3] = gray[3][3];
+      gray[4][4] = gray[3][4];
+      gray[3][0] = gray[2][0];
+      gray[3][1] = gray[2][1];
+      gray[3][2] = gray[2][2];
+      gray[3][3] = gray[2][3];
+      gray[3][4] = gray[2][4];
+      gray[2][0] = gray[1][0];
+      gray[2][1] = gray[1][1];
+      gray[2][2] = gray[1][2];
+      gray[2][3] = gray[1][3];
+      gray[2][4] = gray[1][4];
+      gray[1][0] = gray[0][0];
+      gray[1][1] = gray[0][1];
+      gray[1][2] = gray[0][2];
+      gray[1][3] = gray[0][3];
+      gray[1][4] = gray[0][4];
+      gray[0][0] = (input[0][0].read() + input[0][1].read() + input[0][2].read()) / 3;
+      gray[0][1] = (input[1][0].read() + input[1][1].read() + input[1][2].read()) / 3;
+      gray[0][2] = (input[2][0].read() + input[2][1].read() + input[2][2].read()) / 3;
+      gray[0][3] = (input[3][0].read() + input[3][1].read() + input[3][2].read()) / 3;
+      gray[0][4] = (input[4][0].read() + input[4][1].read() + input[4][2].read()) / 3;
+    }
     output.write((
                      gray[0][0] * 1 +
                      gray[0][1] * 4 +
