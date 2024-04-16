@@ -1,14 +1,11 @@
 #include <chrono>
-#include <iomanip> // For std::setprecision
-
+#include <iomanip>
 #include "SobelFilter.h"
 #include "Testbench.h"
-
 int sc_main(int argc, char **argv)
 {
   // Get the starting timepoint
   auto start = std::chrono::high_resolution_clock::now();
-
   if ((argc < 3) || (argc > 4))
   {
     std::cout << "No arguments for the executable : " << argv[0] << endl;

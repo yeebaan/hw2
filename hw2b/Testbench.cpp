@@ -1,41 +1,108 @@
-#include <cassert>
-#include <cstdio>
-#include <cstdlib>
-using namespace std;
-
 #include "Testbench.h"
 
+void Testbench::do_sobel()
+{
+  for (int y = 0; y < height; y++)
+  {
+    for (int x = -4; x < width + 2; x++)
+    {
+      {
+        std::array<uint8_t, 0xf> rgb_mask = {0};
+        {
+          rgb_mask[0x0] = 0xff;
+          rgb_mask[0x1] = 0xff;
+          rgb_mask[0x2] = 0xff;
+          rgb_mask[0x3] = 0xff;
+          rgb_mask[0x4] = 0xff;
+          rgb_mask[0x5] = 0xff;
+          rgb_mask[0x6] = 0xff;
+          rgb_mask[0x7] = 0xff;
+          rgb_mask[0x8] = 0xff;
+          rgb_mask[0x9] = 0xff;
+          rgb_mask[0xa] = 0xff;
+          rgb_mask[0xb] = 0xff;
+          rgb_mask[0xc] = 0xff;
+          rgb_mask[0xd] = 0xff;
+          rgb_mask[0xe] = 0xff;
+        }
+        std::array<uint8_t, 0xf> rgb_data = {0};
+        {
+          rgb_data[0x0] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 0] : 0;
+          rgb_data[0x1] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 1] : 0;
+          rgb_data[0x2] = (0 <= (y - 2) && (y - 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 2) + x) + 2] : 0;
+          rgb_data[0x3] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 0] : 0;
+          rgb_data[0x4] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 1] : 0;
+          rgb_data[0x5] = (0 <= (y - 1) && (y - 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y - 1) + x) + 2] : 0;
+          rgb_data[0x6] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 0] : 0;
+          rgb_data[0x7] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 1] : 0;
+          rgb_data[0x8] = (0 <= (y + 0) && (y + 0) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 0) + x) + 2] : 0;
+          rgb_data[0x9] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 0] : 0;
+          rgb_data[0xa] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 1] : 0;
+          rgb_data[0xb] = (0 <= (y + 1) && (y + 1) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 1) + x) + 2] : 0;
+          rgb_data[0xc] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 0] : 0;
+          rgb_data[0xd] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 1] : 0;
+          rgb_data[0xe] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 2] : 0;
+        }
+        initiator.write_to_socket(SOBEL_FILTER_R_ADDR, &rgb_mask[0], &rgb_data[0], 0xf);
+      }
+      {
+        bool done = false;
+        while (!done)
+        {
+          std::array<uint8_t, 1> done_mask = {0xff};
+          std::array<uint8_t, 1> done_data = {0};
+          initiator.read_from_socket(SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
+          done = done_data[0] > 0;
+        }
+      }
+      {
+        std::array<uint8_t, 1> result_mask = {0xff};
+        std::array<uint8_t, 1> result_data = {0};
+        initiator.read_from_socket(SOBEL_FILTER_RESULT_ADDR, &result_mask[0], &result_data[0], 0x1);
+        if (0 <= y && y < height && 0 <= (x - 2) && (x - 2) < width)
+        {
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 0] = result_data[0];
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 1] = result_data[0];
+          target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 2] = result_data[0];
+        }
+      }
+    }
+  }
+  sc_stop();
+}
+
 unsigned char header[54] = {
-    0x42,          // identity : B
-    0x4d,          // identity : M
-    0,    0, 0, 0, // file size
-    0,    0,       // reserved1
-    0,    0,       // reserved2
-    54,   0, 0, 0, // RGB data offset
-    40,   0, 0, 0, // struct BITMAPINFOHEADER size
-    0,    0, 0, 0, // bmp width
-    0,    0, 0, 0, // bmp height
-    1,    0,       // planes
-    24,   0,       // bit per pixel
-    0,    0, 0, 0, // compression
-    0,    0, 0, 0, // data size
-    0,    0, 0, 0, // h resolution
-    0,    0, 0, 0, // v resolution
-    0,    0, 0, 0, // used colors
-    0,    0, 0, 0  // important colors
+    0x42,        // identity : B
+    0x4d,        // identity : M
+    0, 0, 0, 0,  // file size
+    0, 0,        // reserved1
+    0, 0,        // reserved2
+    54, 0, 0, 0, // RGB data offset
+    40, 0, 0, 0, // struct BITMAPINFOHEADER size
+    0, 0, 0, 0,  // bmp width
+    0, 0, 0, 0,  // bmp height
+    1, 0,        // planes
+    24, 0,       // bit per pixel
+    0, 0, 0, 0,  // compression
+    0, 0, 0, 0,  // data size
+    0, 0, 0, 0,  // h resolution
+    0, 0, 0, 0,  // v resolution
+    0, 0, 0, 0,  // used colors
+    0, 0, 0, 0   // important colors
 };
 
 Testbench::Testbench(sc_module_name n)
-    : sc_module(n), initiator("initiator"), output_rgb_raw_data_offset(54) {
+    : sc_module(n), initiator("initiator"), output_rgb_raw_data_offset(54)
+{
   SC_THREAD(do_sobel);
 }
 
-Testbench::~Testbench() = default;
-
-int Testbench::read_bmp(string infile_name) {
+int Testbench::read_bmp(string infile_name)
+{
   FILE *fp_s = NULL; // source file handler
   fp_s = fopen(infile_name.c_str(), "rb");
-  if (fp_s == NULL) {
+  if (fp_s == NULL)
+  {
     printf("fopen %s error\n", infile_name.c_str());
     return -1;
   }
@@ -58,23 +125,39 @@ int Testbench::read_bmp(string infile_name) {
 
   source_bitmap =
       (unsigned char *)malloc((size_t)width * height * bytes_per_pixel);
-  if (source_bitmap == NULL) {
+  if (source_bitmap == NULL)
+  {
     printf("malloc images_s error\n");
     return -1;
   }
 
   target_bitmap =
       (unsigned char *)malloc((size_t)width * height * bytes_per_pixel);
-  if (target_bitmap == NULL) {
+  if (target_bitmap == NULL)
+  {
     printf("malloc target_bitmap error\n");
     return -1;
   }
 
+  printf("Image width=%d, height=%d\n", width, height);
   assert(fread(source_bitmap, sizeof(unsigned char),
                (size_t)(long)width * height * bytes_per_pixel, fp_s));
   fclose(fp_s);
+  return 0;
+}
 
+int Testbench::write_bmp(string outfile_name)
+{
+  FILE *fp_t = NULL;      // target file handler
   unsigned int file_size; // file size
+
+  fp_t = fopen(outfile_name.c_str(), "wb");
+  if (fp_t == NULL)
+  {
+    printf("fopen %s error\n", outfile_name.c_str());
+    return -1;
+  }
+
   // file size
   file_size = width * height * bytes_per_pixel + output_rgb_raw_data_offset;
   header[2] = (unsigned char)(file_size & 0x000000ff);
@@ -97,18 +180,6 @@ int Testbench::read_bmp(string infile_name) {
   // bit per pixel
   header[28] = bits_per_pixel;
 
-  return 0;
-}
-
-int Testbench::write_bmp(string outfile_name) {
-  FILE *fp_t = NULL; // target file handler
-
-  fp_t = fopen(outfile_name.c_str(), "wb");
-  if (fp_t == NULL) {
-    printf("fopen %s error\n", outfile_name.c_str());
-    return -1;
-  }
-
   // write header
   fwrite(header, sizeof(unsigned char), output_rgb_raw_data_offset, fp_t);
 
@@ -118,79 +189,4 @@ int Testbench::write_bmp(string outfile_name) {
 
   fclose(fp_t);
   return 0;
-}
-
-void Testbench::do_sobel() {
-  int x, y, v, u;        // for loop counter
-  unsigned char R, G, B; // color of R, G, B
-  int adjustX, adjustY, xBound, yBound;
-  int total;
-
-  word data;
-  unsigned char mask[4];
-  wait(5 * CLOCK_PERIOD, SC_NS);
-  for (y = 0; y != height; ++y) {
-    for (x = 0; x != width; ++x) {
-      adjustX = (MASK_X % 2) ? 1 : 0; // 1
-      adjustY = (MASK_Y % 2) ? 1 : 0; // 1
-      xBound = MASK_X / 2;            // 1
-      yBound = MASK_Y / 2;            // 1
-
-      for (v = -yBound; v != yBound + adjustY; ++v) {   //-1, 0, 1
-        for (u = -xBound; u != xBound + adjustX; ++u) { //-1, 0, 1
-          if (x + u >= 0 && x + u < width && y + v >= 0 && y + v < height) {
-            R = *(source_bitmap +
-                  bytes_per_pixel * (width * (y + v) + (x + u)) + 2);
-            G = *(source_bitmap +
-                  bytes_per_pixel * (width * (y + v) + (x + u)) + 1);
-            B = *(source_bitmap +
-                  bytes_per_pixel * (width * (y + v) + (x + u)) + 0);
-          } else {
-            R = 0;
-            G = 0;
-            B = 0;
-          }
-          data.uc[0] = R;
-          data.uc[1] = G;
-          data.uc[2] = B;
-          mask[0] = 0xff;
-          mask[1] = 0xff;
-          mask[2] = 0xff;
-          mask[3] = 0;
-          initiator.write_to_socket(SOBEL_MM_BASE + SOBEL_FILTER_R_ADDR, mask,
-                                    data.uc, 4);
-          wait(1 * CLOCK_PERIOD, SC_NS);
-        }
-      }
-      bool done=false;
-      int output_num=0;
-      while(!done){
-        initiator.read_from_socket(SOBEL_MM_BASE + SOBEL_FILTER_CHECK_ADDR, mask, data.uc, 4);
-        output_num = data.sint;
-        if(output_num>0) done=true;
-      }
-      wait(10 * CLOCK_PERIOD, SC_NS);
-
-      initiator.read_from_socket(SOBEL_MM_BASE + SOBEL_FILTER_RESULT_ADDR, mask,
-                                 data.uc, 4);
-      total = data.sint;
-
-      if (total - THRESHOLD >= 0) {
-        // black
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 2) = BLACK;
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 1) = BLACK;
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 0) = BLACK;
-      } else {
-        // white
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 2) = WHITE;
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 1) = WHITE;
-        *(target_bitmap + bytes_per_pixel * (width * y + x) + 0) = WHITE;
-      }
-    }
-  }
-  initiator.write_to_socket(RAM_MM_BASE, mask, header,
-                            output_rgb_raw_data_offset);
-  initiator.write_to_socket(RAM_MM_BASE + output_rgb_raw_data_offset, mask,
-                            target_bitmap, bytes_per_pixel * height * width);
-  sc_stop();
 }

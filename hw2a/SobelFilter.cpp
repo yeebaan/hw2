@@ -67,7 +67,6 @@ void SobelFilter::do_filter()
                      gray[4][3] * 4 +
                      gray[4][4] * 1) /
                  273);
-    wait(1, SC_NS);
   }
 }
 

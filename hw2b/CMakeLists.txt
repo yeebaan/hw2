@@ -8,7 +8,7 @@ project (sobel)
 set (CMAKE_CXX_STANDARD 17)
 
 # Add optimization & warning flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Wextra -Wpedantic")
 
 # Set clock period = 1 ns
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D CLOCK_PERIOD=1.0")
@@ -37,4 +37,3 @@ add_custom_target(check
 	DEPENDS run
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}	
 )
-

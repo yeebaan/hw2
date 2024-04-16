@@ -53,7 +53,6 @@ void Testbench::do_sobel()
           std::array<uint8_t, 1> done_data = {0};
           initiator.read_from_socket(SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
           done = done_data[0] > 0;
-          wait(1, SC_NS);
         }
       }
       {
