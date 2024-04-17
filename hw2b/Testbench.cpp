@@ -1,4 +1,5 @@
 #include "Testbench.h"
+#include "MemoryMap.h"
 
 void Testbench::do_sobel()
 {
@@ -43,7 +44,7 @@ void Testbench::do_sobel()
           rgb_data[0xd] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 1] : 0;
           rgb_data[0xe] = (0 <= (y + 2) && (y + 2) < height && 0 <= x && x < width) ? source_bitmap[bytes_per_pixel * (width * (y + 2) + x) + 2] : 0;
         }
-        initiator.write_to_socket(SOBEL_FILTER_R_ADDR, &rgb_mask[0], &rgb_data[0], 0xf);
+        initiator.write_to_socket(SOBEL_MM_BASE + SOBEL_FILTER_R_ADDR, &rgb_mask[0], &rgb_data[0], 0xf);
       }
       {
         bool done = false;
@@ -51,14 +52,14 @@ void Testbench::do_sobel()
         {
           std::array<uint8_t, 1> done_mask = {0xff};
           std::array<uint8_t, 1> done_data = {0};
-          initiator.read_from_socket(SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
+          initiator.read_from_socket(SOBEL_MM_BASE + SOBEL_FILTER_CHECK_ADDR, &done_mask[0], &done_data[0], 0x1);
           done = done_data[0] > 0;
         }
       }
       {
         std::array<uint8_t, 1> result_mask = {0xff};
         std::array<uint8_t, 1> result_data = {0};
-        initiator.read_from_socket(SOBEL_FILTER_RESULT_ADDR, &result_mask[0], &result_data[0], 0x1);
+        initiator.read_from_socket(SOBEL_MM_BASE + SOBEL_FILTER_RESULT_ADDR, &result_mask[0], &result_data[0], 0x1);
         if (0 <= y && y < height && 0 <= (x - 2) && (x - 2) < width)
         {
           target_bitmap[bytes_per_pixel * (width * y + (x - 2)) + 0] = result_data[0];
